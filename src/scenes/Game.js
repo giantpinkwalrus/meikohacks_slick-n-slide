@@ -1,5 +1,6 @@
 /* globals __DEV__ */
 import Phaser from 'phaser'
+import { events } from '../utils'
 
 // import Car from '../sprites/Car'
 
@@ -45,6 +46,12 @@ export default class extends Phaser.Scene {
     } else {
       this.car.setData('engineThrust', clamp(0, 1, this.car.getData('engineThrust') - 0.005))
     }
+
+    events.emit('position', {
+      uuid: window.playerUuid,
+      x: this.car.x,
+      y: this.car.y
+    })
   }
 
   create () {
