@@ -18,7 +18,7 @@ export default class extends Phaser.Scene {
       console.log('game-start')
       // window.session = data.session
       // this.socket.join(data.session.id)
-      this.scene.start('SplashScene')
+      // this.scene.start('SplashScene')
     })
     events.on('position', (data) => {
       // if (window.session) {
@@ -47,7 +47,7 @@ export default class extends Phaser.Scene {
 
   update () {
     if (this.fontsReady) {
-      // this.scene.start('SplashScene')
+      this.scene.start('SplashScene')
     }
   }
 
