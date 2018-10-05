@@ -1,7 +1,7 @@
 /* globals __DEV__ */
 import Phaser from 'phaser'
 
-import Car from '../sprites/Car'
+// import Car from '../sprites/Car'
 
 var cursors
 export default class extends Phaser.Scene {
@@ -18,14 +18,14 @@ export default class extends Phaser.Scene {
   update () {
     if (cursors.left.isDown && cursors.up.isDown) {
       Phaser.Physics.Matter.Matter.Body.setAngularVelocity(this.car.body, -0.02)
-      this.car.angle -= 2
+      this.car.angle -= 2.3
     } else if (cursors.right.isDown && cursors.up.isDown) {
       Phaser.Physics.Matter.Matter.Body.setAngularVelocity(this.car.body, 0.02)
-      this.car.angle += 2
+      this.car.angle += 2.3
     }
 
     if (cursors.up.isDown) {
-      this.car.thrust(0.025)
+      this.car.thrust(0.035)
     } else if (cursors.down.isDown) {
       this.car.thrustBack(0.025)
     }
@@ -35,8 +35,8 @@ export default class extends Phaser.Scene {
     this.car = this.matter.add.image(400, 300, 'motor_bike')
 
     this.car.setAngle(0)
-    this.car.setFrictionAir(0.2)
-    this.car.setMass(10)
+    this.car.setFrictionAir(0.04)
+    this.car.setMass(40)
     cursors = this.input.keyboard.createCursorKeys()
     this.add.text(100, 100, 'Phaser 3 - ES6 - Webpack ', {
       font: '64px Bangers',
