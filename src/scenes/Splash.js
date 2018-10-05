@@ -10,6 +10,8 @@ export default class extends Phaser.Scene {
     // load your assets
     //
     this.load.image('mushroom', 'assets/images/mushroom2.png')
+    this.load.image('vehicle_car', 'assets/images/vehicle_car.png')
+    this.load.image('vehicle_ufo', 'assets/images/vehicle_ufo.png')
   }
 
   create () {
