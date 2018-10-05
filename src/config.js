@@ -7,11 +7,13 @@ export default {
   height: 600,
   localStorageName: 'phaseres6webpack',
   physics: {
-    default: 'arcade',
-    arcade: {
-      fps: 60,
-      gravity: { y: 0 },
-      debug: true
+    default: 'matter',
+    matter: {
+      debug: false,
+      gravity: {
+        x: 0,
+        y: 0
+      }
     }
-  }
+  },
 }

@@ -8,30 +8,35 @@ export default class extends Phaser.Scene {
   constructor () {
     super({ key: 'GameScene' })
   }
-  init () {}
-  preload () {}
+
+  init () {
+  }
+
+  preload () {
+  }
+
   update () {
-    if (cursors.left.isDown) {
-      this.car.body.setAngularVelocity(-300)
-    } else if (cursors.right.isDown) {
-      this.car.body.setAngularVelocity(300)
-    } else {
-      this.car.body.setAngularVelocity(0)
+    if (cursors.left.isDown && cursors.up.isDown) {
+      Phaser.Physics.Matter.Matter.Body.setAngularVelocity(this.car.body, -0.02)
+      this.car.angle -= 2
+    } else if (cursors.right.isDown && cursors.up.isDown) {
+      Phaser.Physics.Matter.Matter.Body.setAngularVelocity(this.car.body, 0.02)
+      this.car.angle += 2
+    }
+
+    if (cursors.up.isDown) {
+      this.car.thrust(0.025)
+    } else if (cursors.down.isDown) {
+      this.car.thrustBack(0.025)
     }
   }
 
   create () {
-    this.car = new Car({
-      scene: this,
-      x: 400,
-      y: 300,
-      asset: 'vehicle_car'
-    })
+    this.car = this.matter.add.image(400, 300, 'motor_bike')
 
-    this.add.existing(this.car)
-    this.physics.add.existing(this.car)
-    this.car.body.useDamping = true
-    this.car.body.setDrag(1000, 1000)
+    this.car.setAngle(0)
+    this.car.setFrictionAir(0.2)
+    this.car.setMass(10)
     cursors = this.input.keyboard.createCursorKeys()
     this.add.text(100, 100, 'Phaser 3 - ES6 - Webpack ', {
       font: '64px Bangers',
