@@ -32,12 +32,35 @@ export default class extends Phaser.Scene {
     events.on('newPlayer', () => {
       this.players = window.game.players
     })
+
+    events.on('player-disconnect', (name) => {
+      const disconnect = this.add.text(10, 10, `${name} has been disconnected!`, {
+        font: '24px sans-serif',
+        fill: '#ff0000'
+      })
+      setTimeout(() => {
+        disconnect.destroy()
+      }, 5000)
+    })
+
+    events.on('starting-in', (time) => {
+      this.starting.setText(time)
+    })
+
+    events.on('game-start', () => {
+      this.lock = false
+      this.starting.setText('GO!')
+      setTimeout(() => { this.starting.setText('') }, 2000)
+    })
   }
 
   preload () {
   }
 
   update () {
+    if (this.lock) {
+      return
+    }
     if (cursors.left.isDown && this.car.getData('engineThrust')) {
       this.car.angle -= carSpecs.turning *
         this.car.getData('engineThrust') *
@@ -63,25 +86,21 @@ export default class extends Phaser.Scene {
       y: this.car.y,
       angle: this.car.angle
     })
-
-    events.on('player-disconnect', (name) => {
-      const disconnect = this.add.text(10, 10, `${name} has been disconnected!`, {
-        font: '24px sans-serif',
-        fill: '#ff0000'
-      })
-      setTimeout(() => {
-        disconnect.destroy()
-      }, 5000)
-    })
   }
 
   create () {
     this.playerId = window.game.playerId
+    this.lock = true
     this.car = this.matter.add.image(400, 300, 'motor_bike')
     this.car.setAngle(0)
     this.car.setFrictionAir(carSpecs.friction)
     this.car.setMass(carSpecs.mass)
     this.car.setData('engineThrust', 0)
+
+    this.starting = this.add.text(400, 10, '30', {
+      font: '24px sans-serif',
+      fill: '#ff0000'
+    })
 
     this.players = window.game.players
     this.matterPlayers = []
@@ -90,9 +109,5 @@ export default class extends Phaser.Scene {
     })
     cursors = this.input.keyboard.createCursorKeys()
     keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-    this.add.text(100, 100, 'Phaser 3 - ES6 - Webpack ', {
-      font: '64px Bangers',
-      fill: '#7744ff'
-    })
   }
 }

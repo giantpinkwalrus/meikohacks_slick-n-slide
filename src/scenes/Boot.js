@@ -38,6 +38,12 @@ export default class extends Phaser.Scene {
     this.socket.on('position-change', data => {
       events.emit('position-change', data)
     })
+    this.socket.on('starting-in', (time) => {
+      events.emit('starting-in', time)
+    })
+    this.socket.on('game-start', () => {
+      events.emit('game-start')
+    })
 
     // internal events to socket
     events.on('position', (data) => {
