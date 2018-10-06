@@ -107,8 +107,9 @@ export default class extends Phaser.Scene {
     this.currentPlayer = window.game.currentPlayer
     this.lock = true
 
-    this.points = []
     /*
+    this.points = []
+
     this.input.on('pointerdown', function (pointer) {
       this.points.push({ x: pointer.position.x, y: pointer.position.y })
       const graphics = this.add.graphics({ x: 0, y: 0 })
@@ -165,7 +166,6 @@ export default class extends Phaser.Scene {
 
     this.car = this.matter.add.image(this.currentPlayer.x, this.currentPlayer.y, 'motor_bike')
     this.car.setAngle(this.currentPlayer.angle)
-    this.car = this.matter.add.image(400, 300, 'motor_bike')
     this.car.setData('curCheckpoint', 0)
     this.car.setData('lapcount', 0)
 
