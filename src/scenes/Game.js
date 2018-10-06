@@ -2,6 +2,7 @@
 import Phaser from 'phaser'
 import { events } from '../utils'
 
+import Track from '../sprites/Track'
 // import Car from '../sprites/Car'
 
 var cursors
@@ -71,15 +72,20 @@ export default class extends Phaser.Scene {
         (keySpace.isDown ? carSpecs.handBreakModifier : 1)
     }
 
-    this.car.thrust(this.car.getData('engineThrust') * carSpecs.maxThrust)
+    this.car.thrust(this.car.getData('engineThrust') * carSpecs.maxThrust / this.car.getData('engineThrustGrassMult'))
     if (cursors.up.isDown) {
       if (!keySpace.isDown) {
-        this.car.setData('engineThrust', clamp(0, 1, this.car.getData('engineThrust') + 0.1))
+        this.car.setData('engineThrust',
+          clamp(0,
+            this.car.getData('engineThrustMax'),
+            this.car.getData('engineThrust') + 0.1))
       }
     } else {
-      this.car.setData('engineThrust', clamp(0, 1, this.car.getData('engineThrust') - 0.005))
+      this.car.setData('engineThrust',
+        clamp(0,
+          this.car.getData('engineThrustMax'),
+          this.car.getData('engineThrust') - 0.005))
     }
-
     events.emit('position', {
       uuid: this.playerId,
       x: this.car.x,
@@ -92,10 +98,87 @@ export default class extends Phaser.Scene {
     this.playerId = window.game.playerId
     this.lock = true
     this.car = this.matter.add.image(400, 300, 'motor_bike')
+
+    this.points = []
+    this.origin = { x: null, y: null }
+    this.input.on('pointerdown', function (pointer) {
+      if (this.origin.x === null) {
+        this.origin.x = pointer.x
+        this.origin.y = pointer.y
+      }
+      this.points.push({ x: pointer.position.x, y: pointer.position.y })
+      const graphics = this.add.graphics({ x: 0, y: 0 })
+
+      graphics.lineStyle(2, 0xff00ff)
+
+      graphics.beginPath()
+
+      graphics.moveTo(this.points[0].x, this.points[0].y)
+
+      for (let i = 1; i < this.points.length; i++) {
+        graphics.lineTo(this.points[i].x, this.points[i].y)
+      }
+      graphics.closePath()
+      graphics.strokePath()
+    }, this)
+
+    this.input.keyboard.on('keydown_A', function (event) {
+      console.log(this.points.splice(0, this.points.length))
+    }, this)
+
+    this.track = new Track({ x: 0, y: 0, scene: this, asset: 'track_hacks_clean' })
+    this.track.setDisplayOrigin(0)
+    this.add.existing(this.track)
+
+    this.trackGrass = []
+
+    this.track.trackdata.track_grass.forEach(poly => {
+      if (poly.x == null || poly.y == null) {
+        return
+      }
+      const collider = this.matter.add.fromVertices(
+        poly.x ? poly.x : this.track.width / 2,
+        poly.y ? poly.y : this.track.height / 2,
+        poly.verts, { isStatic: true, isSensor: true })
+      this.trackGrass.push(collider)
+    })
+
+    this.car = this.matter.add.image(400, 300, 'motor_bike')
+
+    this.matterCollision.addOnCollideActive({
+      objectA: this.car,
+      objectB: this.trackGrass,
+      callback: eventData => {
+        this.car.setData('engineThrustGrassMult',
+          clamp(1, 4,
+            this.car.getData('engineThrustGrassMult') + 0.3))
+        console.log('grass')
+      }
+    })
+
+    this.matterCollision.addOnCollideStart({
+      objectA: this.car,
+      objectB: this.trackGrass,
+      callback: eventData => {
+        this.car.setData('engineThrustMax', 0.5)
+      }
+    })
+
+    this.matterCollision.addOnCollideEnd({
+      objectA: this.car,
+      objectB: this.trackGrass,
+      callback: eventData => {
+        this.car.setData('engineThrustMax', 1)
+        this.car.setData('engineThrustGrassMult', 1)
+      }
+    })
+
     this.car.setAngle(0)
     this.car.setFrictionAir(carSpecs.friction)
     this.car.setMass(carSpecs.mass)
     this.car.setData('engineThrust', 0)
+    this.car.setData('engineThrustGrassMult', 1)
+    this.car.setData('engineThrustMax', 1)
 
     this.starting = this.add.text(400, 10, '30', {
       font: '24px sans-serif',
@@ -107,6 +190,7 @@ export default class extends Phaser.Scene {
     this.players.forEach((player, i) => {
       this.matterPlayers.push(this.matter.add.image(400, 300 + ((i + 1) * 15), 'motor_bike'))
     })
+    // controls
     cursors = this.input.keyboard.createCursorKeys()
     keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   }
