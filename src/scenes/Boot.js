@@ -1,7 +1,6 @@
 import Phaser from 'phaser'
 import WebFont from 'webfontloader'
 import io from 'socket.io-client'
-import uuid from 'uuid/v1'
 import { events } from '../utils'
 
 export default class extends Phaser.Scene {
@@ -13,24 +12,29 @@ export default class extends Phaser.Scene {
 
   init () {
     this.socket = io.connect('http://localhost:80')
-    const playerUuid = uuid()
-    window.playerUuid = playerUuid
-    this.socket.emit('game-join', { uuid: playerUuid })
-    this.socket.on('game-joined', ({ data }) => {
-      this.players = data.session.players
-      events.emit('game-joined')
+    this.addPlayer = this.addPlayer.bind(this)
+    this.socket.on('currentPlayers', (data) => {
+      window.game.playerId = this.socket.id
+      Object.keys(data).forEach(key => {
+        this.addPlayer(data[key])
+      })
     })
-    this.socket.on('game-start', data => {
-      console.log('game-start')
-      window.session = data.session
-      this.scene.start('SplashScene')
+    this.socket.on('newPlayer', (data) => {
+      this.addPlayer(data)
     })
+    this.socket.on('disconnect', (id) => {
+      const player = this.players.filter(item => item.playerId === id)[0]
+      if (player) {
+        console.log(player.name + ' has been disconnected!')
+        const index = this.players.map(p => p.playerId).indexOf(id)
+        this.players.splice(index, index + 1)
+        console.log(this.players)
+      }
+    })
+
+    // internal events to socket
     events.on('position', (data) => {
-      // if (window.session) {
-      // console.log(window.session)
-      // io.to(window.session.id).emit('position', data)
       this.socket.emit('position', data)
-      // }
     })
   }
 
@@ -59,8 +63,13 @@ export default class extends Phaser.Scene {
 
   update () {
     if (this.fontsReady) {
-      // this.scene.start('SplashScene')
+      this.scene.start('SplashScene')
     }
+  }
+
+  addPlayer (player) {
+    this.players.push(player)
+    window.players = this.players
   }
 
   fontsLoaded () {

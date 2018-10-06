@@ -47,11 +47,13 @@ export default class extends Phaser.Scene {
       this.car.setData('engineThrust', clamp(0, 1, this.car.getData('engineThrust') - 0.005))
     }
 
-    events.emit('position', {
-      uuid: window.playerUuid,
-      x: this.car.x,
-      y: this.car.y
-    })
+    if (cursors.left.isDown || cursors.up.isDown || cursors.down.isDown || cursors.right.isDown) {
+      events.emit('position', {
+        uuid: window.game.playerId,
+        x: this.car.x,
+        y: this.car.y
+      })
+    }
   }
 
   create () {
