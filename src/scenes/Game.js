@@ -152,7 +152,7 @@ export default class extends Phaser.Scene {
   }
 
   update () {
-    this.running.play()
+    // this.running.play()
     if (this.lock) {
       return
     }
