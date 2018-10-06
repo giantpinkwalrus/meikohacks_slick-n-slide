@@ -1,4 +1,33 @@
 export default {
+  track_nascar: {
+    track_collisions: [],
+    checkpoints: [
+      { x: 686, y: 265.5, width: 118, height: 67 },
+      { x: 404.5, y: 107, width: 35, height: 118 },
+      { x: 110.5, y: 255.5, width: 121, height: 41 },
+      { x: 398.5, y: 430.5, width: 21, height: 109 }
+    ],
+    player_starts: [],
+    track_grass: [
+      { x: 400.5, y: 26, width: 797, height: 48 },
+      { x: 768.5, y: 325, width: 61, height: 548 },
+      { x: 0.5, y: 489.5, width: 1, height: 7 },
+      { x: 369.5, y: 538.5, width: 733, height: 119 },
+      { x: 29.5, y: 263.5, width: 55, height: 433 },
+      { x: 79.5, y: 73, width: 47, height: 48 },
+      { x: 129.5, y: 60.5, width: 53, height: 17 },
+      { x: 63, y: 122, width: 30, height: 44 },
+      { x: 78.5, y: 431.5, width: 43, height: 97 },
+      { x: 117, y: 458, width: 38, height: 44 },
+      { x: 723.5, y: 428.5, width: 29, height: 35 },
+      { x: 699.5, y: 470.5, width: 77, height: 21 },
+      { x: 709, y: 451, width: 58, height: 14 },
+      { x: 397.5, y: 265, width: 445, height: 186 },
+      { x: 690.5, y: 64, width: 107, height: 30 },
+      { x: 714.5, y: 96, width: 47, height: 32 },
+      { x: 730.5, y: 120, width: 29, height: 22 }
+    ]
+  },
   track_hacks_clean: {
     track_collisions: [],
     player_starts: [{ x: 367, y: 80 }, { x: 390, y: 52 }],
