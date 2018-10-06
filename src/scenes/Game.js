@@ -157,10 +157,15 @@ export default class extends Phaser.Scene {
       if (poly.x == null || poly.y == null) {
         return
       }
-      const collider = this.matter.add.fromVertices(
-        poly.x ? poly.x : this.track.width / 2,
-        poly.y ? poly.y : this.track.height / 2,
-        poly.verts, { isStatic: true, isSensor: true })
+      let collider
+      if (poly.verts != null) {
+        collider = this.matter.add.fromVertices(
+          poly.x ? poly.x : this.track.width / 2,
+          poly.y ? poly.y : this.track.height / 2,
+          poly.verts, { isStatic: true, isSensor: true })
+      } else {
+        collider = this.matter.add.rectangle(poly.x, poly.y, poly.width, poly.height, { isStatic: true, isSensor: true })
+      }
       this.trackGrass.push(collider)
     })
 
@@ -185,7 +190,6 @@ export default class extends Phaser.Scene {
             this.car.setData('curCheckpoint', nextCheckpoint)
           }
         }
-        console.log(eventdata)
       }
     })
 
