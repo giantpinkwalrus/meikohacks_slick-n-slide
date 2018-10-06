@@ -26,13 +26,13 @@ export default class extends Phaser.Scene {
     })
     this.socket.on('newPlayer', (data) => {
       this.addPlayer(data)
-      events.emit('newPlayer')
+      events.emit('newPlayer', data)
     })
     this.socket.on('disconnect', (id) => {
       const player = this.players.filter(item => item.playerId === id)[0]
       if (player) {
         console.log(player.name + ' has been disconnected!')
-        events.emit('player-disconnect', player.name)
+        events.emit('player-disconnect', player)
         const index = this.players.map(p => p.playerId).indexOf(id)
         this.players.splice(index, index + 1)
         console.log(this.players)

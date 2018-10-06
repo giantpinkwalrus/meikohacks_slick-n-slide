@@ -30,15 +30,19 @@ export default class extends Phaser.Scene {
       this.matterPlayers[index].angle = pos.angle
     })
 
-    events.on('newPlayer', () => {
+    events.on('newPlayer', (data) => {
       this.players = window.game.players
+      this.matterPlayers.push(this.matter.add.image(data.x, data.y, 'motor_bike'))
     })
 
-    events.on('player-disconnect', (name) => {
-      const disconnect = this.add.text(10, 10, `${name} has been disconnected!`, {
+    events.on('player-disconnect', (player) => {
+      const disconnect = this.add.text(10, 10, `${player.name} has been disconnected!`, {
         font: '24px sans-serif',
         fill: '#ff0000'
       })
+      const index = this.players.map(p => p.playerId).indexOf(player.playerId)
+      this.players.splice(index, index + 1)
+      this.matterPlayers[index].destroy()
       setTimeout(() => {
         disconnect.destroy()
       }, 5000)
