@@ -85,32 +85,32 @@ export default class extends Phaser.Scene {
 
   init (config) {
     this.config = config
-    switch(this.config.car) {
+    switch (this.config.car) {
       case 'motor_bike':
         carSpecs = carSpecsBike
-        break;
+        break
       case 'vehicle_dragcar':
         carSpecs = carSpecsDrag
-        break;
+        break
       case 'toyota':
         carSpecs = carSpecsToyota
-        break;
+        break
       case 'williams':
         carSpecs = carSpecsWilliams
-        break;
+        break
       case 'ferrari':
         carSpecs = carSpecsFerrari
-        break;
+        break
       case 'vehicle_tank':
         carSpecs = carSpecsTank
-        break;
+        break
       case 'vehicle_ufo':
         carSpecs = carSpecsUfo
-        break;
+        break
       default:
         carSpecs = carSpecsDefault
     }
-    console.log(carSpecs);
+    console.log(carSpecs)
     events.on('position-change', (pos) => {
       const index = this.players.map(p => p.playerId).indexOf(pos.uuid)
       this.matterPlayers[index].x = pos.x
@@ -141,6 +141,7 @@ export default class extends Phaser.Scene {
     })
 
     events.on('game-start', () => {
+      console.log('Tullaanko tänne!')
       this.lock = false
       this.starting.setText('GO!')
       setTimeout(() => { this.starting.setText('') }, 2000)
@@ -210,6 +211,7 @@ export default class extends Phaser.Scene {
     this.timer = setInterval(() => { this.time += 1 }, 1000)
     this.laptimes = []
 
+    events.emit('track-loaded', this.playerId)
     /*
     this.points = []
 

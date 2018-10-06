@@ -52,6 +52,10 @@ export default class extends Phaser.Scene {
     events.on('position', (data) => {
       this.socket.emit('position', data)
     })
+
+    events.on('track-loaded', id => {
+      this.socket.emit('track-loaded', id)
+    })
   }
 
   preload () {
