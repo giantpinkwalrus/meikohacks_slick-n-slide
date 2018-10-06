@@ -2,8 +2,16 @@ export default {
   track_hacks_clean: {
     track_collisions: [],
     player_starts: [],
-    goal: {},
-    checkpoints: [],
+    checkpoints: [
+      { x: 100, y: 198.5, width: 164, height: 39 },
+      { x: 213, y: 432.5, width: 38, height: 129 },
+      { x: 383.5, y: 182, width: 27, height: 118 },
+      { x: 583.5, y: 431, width: 39, height: 110 },
+      { x: 710, y: 380.5, width: 132, height: 23 },
+      { x: 573.5, y: 253, width: 149, height: 36 },
+      { x: 707.5, y: 141.5, width: 125, height: 37 },
+      { x: 327, y: 63.5, width: 22, height: 117 }
+    ],
     track_grass: [
       {
         x: 400,

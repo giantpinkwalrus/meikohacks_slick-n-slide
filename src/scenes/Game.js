@@ -9,14 +9,17 @@ var cursors
 var keySpace
 const carSpecs = {
   friction: 0.04,
-  mass: 40,
-  maxThrust: 0.035,
-  turning: 2.7,
-  handBreakModifier: 1.9
+  mass: 44,
+  maxThrust: 0.0365,
+  turning: 3.2,
+  handBreakModifier: 1.95
 }
 function clamp (min, max, value) {
   return Math.min(Math.max(value, min), max)
 };
+function calcRectDim (point1, point2) {
+  return Math.max(point1, point2) - Math.min(point1, point2)
+}
 export default class extends Phaser.Scene {
   constructor () {
     super({ key: 'GameScene' })
@@ -100,12 +103,8 @@ export default class extends Phaser.Scene {
     this.car = this.matter.add.image(400, 300, 'motor_bike')
 
     this.points = []
-    this.origin = { x: null, y: null }
+    /*
     this.input.on('pointerdown', function (pointer) {
-      if (this.origin.x === null) {
-        this.origin.x = pointer.x
-        this.origin.y = pointer.y
-      }
       this.points.push({ x: pointer.position.x, y: pointer.position.y })
       const graphics = this.add.graphics({ x: 0, y: 0 })
 
@@ -125,12 +124,29 @@ export default class extends Phaser.Scene {
     this.input.keyboard.on('keydown_A', function (event) {
       console.log(this.points.splice(0, this.points.length))
     }, this)
+    */
+
+    this.input.on('pointerup', function (pointer) {
+      const x1 = pointer.downX
+      const y1 = pointer.downY
+      const x2 = pointer.upX
+      const y2 = pointer.upY
+      const width = calcRectDim(x1, x2)
+      const height = calcRectDim(y1, y2)
+      const xpos = Math.min(x1, x2) + width / 2
+      const ypos = Math.min(y1, y2) + height / 2
+      const rect = new Phaser.Geom.Rectangle(xpos, ypos, width, height)
+      console.log(rect)
+      this.add.rectangle(xpos, ypos, width, height, 0xff0000, 0.5)
+    }, this)
 
     this.track = new Track({ x: 0, y: 0, scene: this, asset: 'track_hacks_clean' })
     this.track.setDisplayOrigin(0)
     this.add.existing(this.track)
 
     this.trackGrass = []
+    this.trackCheckpoints = this.track.trackdata.checkpoints.map(({ x, y, width, height }, idx) =>
+      this.matter.add.rectangle(x, y, width, height, { isStatic: true, isSensor: true, _order: idx }))
 
     this.track.trackdata.track_grass.forEach(poly => {
       if (poly.x == null || poly.y == null) {
@@ -144,6 +160,28 @@ export default class extends Phaser.Scene {
     })
 
     this.car = this.matter.add.image(400, 300, 'motor_bike')
+    this.car.setData('curCheckpoint', 0)
+    this.car.setData('lapcount', 0)
+
+    this.matterCollision.addOnCollideStart({
+      objectA: this.car,
+      objectB: this.trackCheckpoints,
+      callback: eventdata => {
+        const { bodyB: checkpoint } = eventdata
+        const curCheckpoint = this.car.getData('curCheckpoint')
+        if (checkpoint._order === curCheckpoint) {
+          let nextCheckpoint = this.car.getData('curCheckpoint') + 1
+          if (nextCheckpoint === this.trackCheckpoints.length) {
+            this.car.setData('curCheckpoint', 0)
+            this.car.setData('lapcount', this.car.getData('lapcount') + 1)
+            console.log(this.car.getData('lapcount'))
+          } else {
+            this.car.setData('curCheckpoint', nextCheckpoint)
+          }
+        }
+        console.log(eventdata)
+      }
+    })
 
     this.matterCollision.addOnCollideActive({
       objectA: this.car,
@@ -152,7 +190,6 @@ export default class extends Phaser.Scene {
         this.car.setData('engineThrustGrassMult',
           clamp(1, 4,
             this.car.getData('engineThrustGrassMult') + 0.3))
-        console.log('grass')
       }
     })
 
