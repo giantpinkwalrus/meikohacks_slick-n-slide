@@ -25,7 +25,8 @@ export default class extends Phaser.Scene {
     super({ key: 'GameScene' })
   }
 
-  init () {
+  init (config) {
+    this.config = config
     events.on('position-change', (pos) => {
       const index = this.players.map(p => p.playerId).indexOf(pos.uuid)
       this.matterPlayers[index].x = pos.x
@@ -169,7 +170,7 @@ export default class extends Phaser.Scene {
       this.trackGrass.push(collider)
     })
 
-    this.car = this.matter.add.image(this.currentPlayer.x, this.currentPlayer.y, 'motor_bike')
+    this.car = this.matter.add.image(this.currentPlayer.x, this.currentPlayer.y, this.config.car)
     this.car.setAngle(this.currentPlayer.angle)
     this.car.setData('curCheckpoint', 0)
     this.car.setData('lapcount', 0)
