@@ -33,15 +33,19 @@ export default class extends Phaser.Scene {
       this.matterPlayers[index].angle = pos.angle
     })
 
-    events.on('newPlayer', () => {
+    events.on('newPlayer', (data) => {
       this.players = window.game.players
+      this.matterPlayers.push(this.matter.add.image(data.x, data.y, 'motor_bike'))
     })
 
-    events.on('player-disconnect', (name) => {
-      const disconnect = this.add.text(10, 10, `${name} has been disconnected!`, {
+    events.on('player-disconnect', (player) => {
+      const disconnect = this.add.text(10, 10, `${player.name} has been disconnected!`, {
         font: '24px sans-serif',
         fill: '#ff0000'
       })
+      const index = this.players.map(p => p.playerId).indexOf(player.playerId)
+      this.players.splice(index, index + 1)
+      this.matterPlayers[index].destroy()
       setTimeout(() => {
         disconnect.destroy()
       }, 5000)
@@ -59,6 +63,7 @@ export default class extends Phaser.Scene {
   }
 
   preload () {
+    this.track = new Track({ x: 0, y: 0, scene: this, asset: 'track_hacks_clean' })
   }
 
   update () {
@@ -99,8 +104,8 @@ export default class extends Phaser.Scene {
 
   create () {
     this.playerId = window.game.playerId
+    this.currentPlayer = window.game.currentPlayer
     this.lock = true
-    this.car = this.matter.add.image(400, 300, 'motor_bike')
 
     this.points = []
     /*
@@ -140,7 +145,6 @@ export default class extends Phaser.Scene {
       this.add.rectangle(xpos, ypos, width, height, 0xff0000, 0.5)
     }, this)
 
-    this.track = new Track({ x: 0, y: 0, scene: this, asset: 'track_hacks_clean' })
     this.track.setDisplayOrigin(0)
     this.add.existing(this.track)
 
@@ -159,6 +163,8 @@ export default class extends Phaser.Scene {
       this.trackGrass.push(collider)
     })
 
+    this.car = this.matter.add.image(this.currentPlayer.x, this.currentPlayer.y, 'motor_bike')
+    this.car.setAngle(this.currentPlayer.angle)
     this.car = this.matter.add.image(400, 300, 'motor_bike')
     this.car.setData('curCheckpoint', 0)
     this.car.setData('lapcount', 0)
@@ -210,7 +216,6 @@ export default class extends Phaser.Scene {
       }
     })
 
-    this.car.setAngle(0)
     this.car.setFrictionAir(carSpecs.friction)
     this.car.setMass(carSpecs.mass)
     this.car.setData('engineThrust', 0)
@@ -224,10 +229,11 @@ export default class extends Phaser.Scene {
 
     this.players = window.game.players
     this.matterPlayers = []
-    this.players.forEach((player, i) => {
-      this.matterPlayers.push(this.matter.add.image(400, 300 + ((i + 1) * 15), 'motor_bike'))
-    })
-    this.matter.world.setBounds(0, 0, 800, 600)
+    if (this.players) {
+      this.players.forEach((player, i) => {
+        this.matterPlayers.push(this.matter.add.image(player.x, player.y, 'motor_bike'))
+      })
+    }
     // controls
     cursors = this.input.keyboard.createCursorKeys()
     keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
