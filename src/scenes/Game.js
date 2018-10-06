@@ -155,6 +155,9 @@ export default class extends Phaser.Scene {
     if (this.lock) {
       return
     }
+    if (this.car.getData('lapcount') >= 4) {
+      // Track complete!
+    }
     if (cursors.left.isDown && this.car.getData('engineThrust')) {
       this.car.angle -= carSpecs.turning *
         this.car.getData('engineThrust') *
@@ -185,12 +188,20 @@ export default class extends Phaser.Scene {
       y: this.car.y,
       angle: this.car.angle
     })
+
+    this.hudLaps.setText(`${this.car.getData('lapcount')} / 4`)
+
+    const currentLapText = this.time
+    this.laptimesText.setText(`time: ${this.laptimes.map(l => l)}${this.laptimes.length ? ',' : ''}${currentLapText}`)
   }
 
   create () {
     this.playerId = window.game.playerId
     this.currentPlayer = window.game.currentPlayer
     this.lock = true
+    this.time = 0
+    this.timer = setInterval(() => { this.time += 1 }, 1000)
+    this.laptimes = []
 
     /*
     this.points = []
@@ -270,6 +281,9 @@ export default class extends Phaser.Scene {
           if (nextCheckpoint === this.trackCheckpoints.length) {
             this.car.setData('curCheckpoint', 0)
             this.car.setData('lapcount', this.car.getData('lapcount') + 1)
+            this.laptimes.push(this.time)
+            this.laptimesText.setText(this.laptimes.map(time => time))
+            this.time = 0
             console.log(this.car.getData('lapcount'))
           } else {
             this.car.setData('curCheckpoint', nextCheckpoint)
@@ -314,6 +328,22 @@ export default class extends Phaser.Scene {
     this.starting = this.add.text(400, 10, '30', {
       font: '24px sans-serif',
       fill: '#ff0000'
+    })
+
+    this.matter.add.sprite(400, 573, 'hud_overlay')
+    this.hudName = this.add.text(700, 560, this.currentPlayer.name.toUpperCase(), {
+      font: '17px sans-serif',
+      fill: 'black'
+    })
+
+    this.hudLaps = this.add.text(600, 560, `${this.car.getData('lapcount')} / 4`, {
+      font: '17px sans-serif',
+      fill: 'black'
+    })
+
+    this.laptimesText = this.add.text(450, 560, 'time', {
+      font: '17px sans-serif',
+      fill: 'black'
     })
 
     this.players = window.game.players

@@ -23,6 +23,7 @@ export default class extends Phaser.Scene {
     this.load.image('track2', 'assets/maps/track2/track2.png')
     this.load.image('track3', 'assets/maps/track3/track3.png')
     this.load.image('track_nascar', 'assets/maps/track4/track_nascar.png')
+    this.load.image('hud_overlay', 'assets/maps/overlay.png')
   }
 
   create () {
