@@ -190,6 +190,7 @@ export default class extends Phaser.Scene {
     this.players.forEach((player, i) => {
       this.matterPlayers.push(this.matter.add.image(400, 300 + ((i + 1) * 15), 'motor_bike'))
     })
+    this.matter.world.setBounds(0, 0, 800, 600)
     // controls
     cursors = this.input.keyboard.createCursorKeys()
     keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
