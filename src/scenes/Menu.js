@@ -22,6 +22,10 @@ export default class extends Phaser.Scene {
     })
 
     // this.scene.start('MenuScene')
+    const theme = window.game.sound.add('theme')
+    theme.play()
+    theme.loop = true
+
     this.add.tileSprite(400, 300, 800, 600, 'menu')
     const button = this.add.sprite(400, 400, 'button')
     button.setInteractive()

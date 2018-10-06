@@ -23,6 +23,10 @@ export default class extends Phaser.Scene {
     this.load.image('track2', 'assets/maps/track2/track2.png')
     this.load.image('track3', 'assets/maps/track3/track3.png')
     this.load.image('track_nascar', 'assets/maps/track4/track_nascar.png')
+
+    this.load.audio('running', 'assets/sounds/running.wav')
+    this.load.audio('break', 'assets/sounds/active_break.wav')
+    this.load.audio('theme', 'assets/sounds/theme.mp3')
   }
 
   create () {

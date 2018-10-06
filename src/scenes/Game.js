@@ -68,6 +68,7 @@ export default class extends Phaser.Scene {
   }
 
   update () {
+    this.running.play()
     if (this.lock) {
       return
     }
@@ -104,6 +105,12 @@ export default class extends Phaser.Scene {
   }
 
   create () {
+    // this.break = window.game.sound.add('break')
+    // this.running = window.game.sound.add('running')
+    // this.running.loop = true
+    // this.running.volume = 0.5
+    // this.running.detune = 0.4
+
     this.playerId = window.game.playerId
     this.currentPlayer = window.game.currentPlayer
     this.lock = true
