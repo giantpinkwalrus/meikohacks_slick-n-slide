@@ -56,6 +56,7 @@ export default class extends Phaser.Scene {
   }
 
   preload () {
+    this.track = new Track({ x: 0, y: 0, scene: this, asset: 'track_hacks_clean' })
   }
 
   update () {
@@ -92,12 +93,13 @@ export default class extends Phaser.Scene {
       y: this.car.y,
       angle: this.car.angle
     })
+    console.log(this.car)
   }
 
   create () {
     this.playerId = window.game.playerId
+    this.currentPlayer = window.game.currentPlayer
     this.lock = true
-    this.car = this.matter.add.image(400, 300, 'motor_bike')
 
     this.points = []
     this.origin = { x: null, y: null }
@@ -126,7 +128,6 @@ export default class extends Phaser.Scene {
       console.log(this.points.splice(0, this.points.length))
     }, this)
 
-    this.track = new Track({ x: 0, y: 0, scene: this, asset: 'track_hacks_clean' })
     this.track.setDisplayOrigin(0)
     this.add.existing(this.track)
 
@@ -143,7 +144,8 @@ export default class extends Phaser.Scene {
       this.trackGrass.push(collider)
     })
 
-    this.car = this.matter.add.image(400, 300, 'motor_bike')
+    this.car = this.matter.add.image(this.currentPlayer.x, this.currentPlayer.y, 'motor_bike')
+    this.car.setAngle(this.currentPlayer.angle)
 
     this.matterCollision.addOnCollideActive({
       objectA: this.car,
@@ -173,7 +175,6 @@ export default class extends Phaser.Scene {
       }
     })
 
-    this.car.setAngle(0)
     this.car.setFrictionAir(carSpecs.friction)
     this.car.setMass(carSpecs.mass)
     this.car.setData('engineThrust', 0)
@@ -187,10 +188,11 @@ export default class extends Phaser.Scene {
 
     this.players = window.game.players
     this.matterPlayers = []
-    this.players.forEach((player, i) => {
-      this.matterPlayers.push(this.matter.add.image(400, 300 + ((i + 1) * 15), 'motor_bike'))
-    })
-    this.matter.world.setBounds(0, 0, 800, 600)
+    if (this.players) {
+      this.players.forEach((player, i) => {
+        this.matterPlayers.push(this.matter.add.image(player.x, player.y, 'motor_bike'))
+      })
+    }
     // controls
     cursors = this.input.keyboard.createCursorKeys()
     keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)

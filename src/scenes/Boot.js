@@ -15,9 +15,12 @@ export default class extends Phaser.Scene {
     this.addPlayer = this.addPlayer.bind(this)
     this.socket.on('currentPlayers', (data) => {
       window.game.playerId = this.socket.id
+
       Object.keys(data).forEach(key => {
         if (data[key].playerId !== this.socket.id) {
           this.addPlayer(data[key])
+        } else {
+          window.game.currentPlayer = data[key]
         }
       })
     })

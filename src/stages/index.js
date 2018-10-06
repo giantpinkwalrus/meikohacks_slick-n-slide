@@ -1,7 +1,7 @@
 export default {
   track_hacks_clean: {
     track_collisions: [],
-    player_starts: [],
+    player_starts: [{ x: 367, y: 80 }, { x: 390, y: 52 }],
     goal: {},
     checkpoints: [],
     track_grass: [
