@@ -10,7 +10,7 @@ export default {
   physics: {
     default: 'matter',
     matter: {
-      debug: true,
+      debug: false,
       fps: 60,
       gravity: {
         x: 0,
