@@ -47,13 +47,23 @@ export default class extends Phaser.Scene {
       this.car.setData('engineThrust', clamp(0, 1, this.car.getData('engineThrust') - 0.005))
     }
 
-    if (cursors.left.isDown || cursors.up.isDown || cursors.down.isDown || cursors.right.isDown) {
+    if (cursors.left.isDown || cursors.up.isDown || cursors.down.isDown || cursors.right.isDown || keySpace.isDown) {
       events.emit('position', {
         uuid: window.game.playerId,
         x: this.car.x,
         y: this.car.y
       })
     }
+    
+    events.on('player-disconnect', (name) => {
+      const disconnect = this.add.text(10, 10, `${name} has been disconnected!`, {
+        font: '24px sans-serif',
+        fill: '#ff0000'
+      })
+      setTimeout(() => {
+        disconnect.destroy();
+      }, 5000);
+    })
   }
 
   create () {

@@ -26,6 +26,7 @@ export default class extends Phaser.Scene {
       const player = this.players.filter(item => item.playerId === id)[0]
       if (player) {
         console.log(player.name + ' has been disconnected!')
+        events.emit('player-disconnect', player.name);
         const index = this.players.map(p => p.playerId).indexOf(id)
         this.players.splice(index, index + 1)
         console.log(this.players)
