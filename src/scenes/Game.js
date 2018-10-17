@@ -130,6 +130,7 @@ export default class extends Phaser.Scene {
       const index = this.players.map(p => p.playerId).indexOf(player.playerId)
       this.players.splice(index, index + 1)
       this.matterPlayers[index].destroy()
+      this.matterPlayers.splice(index, index + 1)
       setTimeout(() => {
         disconnect.destroy()
       }, 5000)
@@ -141,6 +142,7 @@ export default class extends Phaser.Scene {
 
     events.on('game-start', () => {
       this.lock = false
+      this.time2 = 0
       this.starting.setText('GO!')
       setTimeout(() => { this.starting.setText('') }, 2000)
     })
@@ -157,6 +159,7 @@ export default class extends Phaser.Scene {
     }
     if (this.car.getData('lapcount') >= 4) {
       // Track complete!
+      this.lock = true
     }
     if (cursors.left.isDown && this.car.getData('engineThrust')) {
       this.car.angle -= carSpecs.turning *
@@ -191,8 +194,8 @@ export default class extends Phaser.Scene {
 
     this.hudLaps.setText(`${this.car.getData('lapcount')} / 4`)
 
-    const currentLapText = this.time
-    this.laptimesText.setText(`time: ${this.laptimes.map(l => l)}${this.laptimes.length ? ',' : ''}${currentLapText}`)
+    const currentLapText = Math.round(this.time2 * 100) / 100
+    this.laptimesText.setText(`time: ${this.laptimes.map(l => l)}${this.laptimes.length ? ',' : ''}${this.laptimes.length >= 4 ? '' : currentLapText}`)
   }
 
   create () {
@@ -205,8 +208,8 @@ export default class extends Phaser.Scene {
     this.playerId = window.game.playerId
     this.currentPlayer = window.game.currentPlayer
     this.lock = true
-    this.time = 0
-    this.timer = setInterval(() => { this.time += 1 }, 1000)
+    this.time2 = 0
+    this.timer = setInterval(() => { this.time2 += 0.01 }, 10)
     this.laptimes = []
     this.matter.world.setBounds(0, 0, 800, 600)
 
@@ -290,9 +293,9 @@ export default class extends Phaser.Scene {
           if (nextCheckpoint === this.trackCheckpoints.length) {
             this.car.setData('curCheckpoint', 0)
             this.car.setData('lapcount', this.car.getData('lapcount') + 1)
-            this.laptimes.push(this.time)
-            this.laptimesText.setText(this.laptimes.map(time => time))
-            this.time = 0
+            this.laptimes.push(Math.round(this.time2 * 100) / 100)
+            // this.laptimesText.setText(this.laptimes.map(time => time))
+            this.time2 = 0
           } else {
             this.car.setData('curCheckpoint', nextCheckpoint)
           }
@@ -350,7 +353,7 @@ export default class extends Phaser.Scene {
       fill: 'black'
     })
 
-    this.laptimesText = this.add.text(450, 560, 'time', {
+    this.laptimesText = this.add.text(190, 560, 'time:', {
       font: '17px sans-serif',
       fill: 'black'
     })
