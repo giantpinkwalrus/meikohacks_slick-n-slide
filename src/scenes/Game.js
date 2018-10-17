@@ -110,7 +110,6 @@ export default class extends Phaser.Scene {
       default:
         carSpecs = carSpecsDefault
     }
-    console.log(carSpecs)
     events.on('position-change', (pos) => {
       const index = this.players.map(p => p.playerId).indexOf(pos.uuid)
       this.matterPlayers[index].x = pos.x
@@ -141,7 +140,6 @@ export default class extends Phaser.Scene {
     })
 
     events.on('game-start', () => {
-      console.log('Tullaanko tänne!')
       this.lock = false
       this.starting.setText('GO!')
       setTimeout(() => { this.starting.setText('') }, 2000)
@@ -210,6 +208,7 @@ export default class extends Phaser.Scene {
     this.time = 0
     this.timer = setInterval(() => { this.time += 1 }, 1000)
     this.laptimes = []
+    this.matter.world.setBounds(0, 0, 800, 600)
 
     events.emit('track-loaded', this.playerId)
     /*
@@ -275,6 +274,7 @@ export default class extends Phaser.Scene {
     })
 
     this.car = this.matter.add.image(this.currentPlayer.x, this.currentPlayer.y, this.config.car)
+    this.car.body.collideWorldBounds = true
     this.car.setAngle(this.currentPlayer.angle)
     this.car.setData('curCheckpoint', 0)
     this.car.setData('lapcount', 0)
@@ -293,7 +293,6 @@ export default class extends Phaser.Scene {
             this.laptimes.push(this.time)
             this.laptimesText.setText(this.laptimes.map(time => time))
             this.time = 0
-            console.log(this.car.getData('lapcount'))
           } else {
             this.car.setData('curCheckpoint', nextCheckpoint)
           }
@@ -339,7 +338,8 @@ export default class extends Phaser.Scene {
       fill: '#ff0000'
     })
 
-    this.matter.add.sprite(400, 573, 'hud_overlay')
+    this.hud = this.matter.add.sprite(400, 573, 'hud_overlay')
+    this.hud.body.isStatic = true
     this.hudName = this.add.text(700, 560, this.currentPlayer.name.toUpperCase(), {
       font: '17px sans-serif',
       fill: 'black'

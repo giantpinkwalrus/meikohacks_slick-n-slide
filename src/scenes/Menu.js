@@ -50,7 +50,6 @@ export default class extends Phaser.Scene {
 
     this.selection = cars[0]
     cars.forEach(car => {
-      console.log(car)
       car.setInteractive()
       car.on('pointerup', () => {
         this.selection.angle = 0
