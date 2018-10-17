@@ -3,6 +3,8 @@ import Phaser from 'phaser'
 export default class extends Phaser.Scene {
   constructor () {
     super({ key: 'MenuScene' })
+    this.startGame = this.startGame.bind(this)
+    this.toggleFullscreen = this.toggleFullscreen.bind(this)
   }
 
   preload () {}
@@ -15,27 +17,50 @@ export default class extends Phaser.Scene {
     this.scene.start('GameScene', { car: this.selection.texture.key })
   }
 
+  toggleFullscreen () {
+    // scale canvas to full screen
+    let ratio = 1
+    if (!this.fullscreen) {
+      ratio = Math.min(window.innerWidth / 800, window.innerHeight / 600)
+    }
+    this.game.canvas.style.width = 800 * ratio + 'px'
+    this.game.canvas.style.height = 600 * ratio + 'px'
+    this.fullscreen = !this.fullscreen
+  }
+
   create () {
     // this.scene.start('MenuScene')
     const theme = window.game.sound.add('theme')
     theme.play()
     theme.loop = true
 
-    this.add.tileSprite(400, 300, 800, 600, 'menu')
+    this.fullscreen = false
+    this.add.tileSprite(398, 298, 800, 600, 'menu')
 
     const button = this.add.text(300, 400, 'Start the game', {
       font: '32px Bangers',
       fill: '#fff'
     })
     button.setInteractive()
-    button.on('pointerup', () => { this.startGame() })
-    button.on('pointerover', () => {
-      button.tint = 0xffff00
-      this.game.canvas.style.cursor = 'pointer'
+    button.on('pointerup', this.startGame)
+
+    const fullscreenToggle = this.add.text(325, 470, 'Toggle fullscreen', {
+      font: '18px Bangers',
+      fill: '#fff'
     })
-    button.on('pointerout', () => {
-      button.tint = 0xffffff
-      this.game.canvas.style.cursor = 'default'
+    fullscreenToggle.setInteractive()
+    fullscreenToggle.on('pointerup', this.toggleFullscreen)
+
+    const pointerTargets = [button, fullscreenToggle]
+    pointerTargets.forEach((el) => {
+      el.on('pointerover', () => {
+        el.tint = 0xffff00
+        this.game.canvas.style.cursor = 'pointer'
+      })
+      el.on('pointerout', () => {
+        el.tint = 0xffffff
+        this.game.canvas.style.cursor = 'default'
+      })
     })
 
     const cars = [
