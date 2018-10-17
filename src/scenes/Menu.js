@@ -1,4 +1,5 @@
 import Phaser from 'phaser'
+import { events } from '../utils'
 
 export default class extends Phaser.Scene {
   constructor () {
@@ -74,11 +75,14 @@ export default class extends Phaser.Scene {
     ]
 
     this.selection = cars[0]
+    events.emit('car-selected', this.selection.texture.key)
+
     cars.forEach(car => {
       car.setInteractive()
       car.on('pointerup', () => {
         this.selection.angle = 0
         this.selection = car
+        events.emit('car-selected', car.texture.key)
       })
       car.on('pointerover', () => {
         this.game.canvas.style.cursor = 'pointer'

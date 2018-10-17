@@ -119,7 +119,13 @@ export default class extends Phaser.Scene {
 
     events.on('newPlayer', (data) => {
       this.players = window.game.players
-      this.matterPlayers.push(this.matter.add.image(data.x, data.y, 'motor_bike'))
+      console.log(data)
+      this.matterPlayers.push(this.matter.add.image(data.x, data.y, data.car))
+    })
+
+    events.on('car-change', (data) => {
+      const index = this.players.map(p => p.playerId).indexOf(data.playerId)
+      this.matterPlayers[index].setTexture(data.car)
     })
 
     events.on('player-disconnect', (player) => {
@@ -362,7 +368,8 @@ export default class extends Phaser.Scene {
     this.matterPlayers = []
     if (this.players) {
       this.players.forEach((player, i) => {
-        this.matterPlayers.push(this.matter.add.image(player.x, player.y, 'motor_bike'))
+        this.matterPlayers.push(this.matter.add.image(player.x, player.y, player.car))
+        this.matterPlayers[this.matterPlayers.length - 1].setAngle(player.angle)
       })
     }
     // controls

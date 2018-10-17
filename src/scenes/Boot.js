@@ -13,6 +13,7 @@ export default class extends Phaser.Scene {
   init () {
     this.socket = io.connect('http://localhost:80')
     this.addPlayer = this.addPlayer.bind(this)
+    // If there's already players in the game...
     this.socket.on('currentPlayers', (data) => {
       window.game.playerId = this.socket.id
 
@@ -24,10 +25,12 @@ export default class extends Phaser.Scene {
         }
       })
     })
+    // If someone connects to the game
     this.socket.on('newPlayer', (data) => {
       this.addPlayer(data)
       events.emit('newPlayer', data)
     })
+    // If someone disconnects
     this.socket.on('disconnect', (id) => {
       const player = this.players.filter(item => item.playerId === id)[0]
       if (player) {
@@ -36,23 +39,32 @@ export default class extends Phaser.Scene {
         this.players.splice(index, index + 1)
       }
     })
+    // When someone else moves
     this.socket.on('position-change', data => {
       events.emit('position-change', data)
     })
+    // Calculator before game starts
     this.socket.on('starting-in', (time) => {
       events.emit('starting-in', time)
     })
+    // Game started!!.. rock'n roll
     this.socket.on('game-start', () => {
       events.emit('game-start')
+    })
+    // Someone changed his/her car
+    this.socket.on('car-change', data => {
+      events.emit('car-change', data)
     })
 
     // internal events to socket
     events.on('position', (data) => {
       this.socket.emit('position', data)
     })
-
     events.on('track-loaded', id => {
       this.socket.emit('track-loaded', id)
+    })
+    events.on('car-selected', key => {
+      this.socket.emit('car-selected', key)
     })
   }
 
