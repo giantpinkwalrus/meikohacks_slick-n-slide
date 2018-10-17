@@ -53,6 +53,8 @@ export default class extends Phaser.Scene {
     })
     // Someone changed his/her car
     this.socket.on('car-change', data => {
+      const index = this.players.map(p => p.playerId).indexOf(data.playerId)
+      this.players[index].car = data.car
       events.emit('car-change', data)
     })
 
